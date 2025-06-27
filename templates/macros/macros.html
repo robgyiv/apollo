@@ -213,46 +213,83 @@
         {% if page.extra.local_image %}
         {% if page.extra.link_to %}
         <a href={{ page.extra.link_to }}>
-        <img class="card-image" alt={{ page.extra.local_image }} src="{{ get_url(path=page.extra.local_image) }}" />
+            <img class="card-image" alt={{ page.extra.local_image }} src="{{ get_url(path=page.extra.local_image) }}" />
         </a>
         {% else %}
         <a href={{ page.permalink }}>
-        <img class="card-image" alt={{ page.extra.local_image }} src="{{ get_url(path=page.extra.local_image) }}" />
+            <img class="card-image" alt={{ page.extra.local_image }} src="{{ get_url(path=page.extra.local_image) }}" />
         </a>
         {% endif %}
         {% elif page.extra.remote_image %}
         <a href={{ page.permalink }}>
-        <img class="card-image" alt={{ page.extra.remote_image }} src="{{ page.extra.remote_image }}" />
+            <img class="card-image" alt={{ page.extra.remote_image }} src="{{ page.extra.remote_image }}" />
+        </a>
         {% else %}
-        <div class="card-image-placeholder"></div>
+        {% if page.extra.link_to %}
+        <a href={{ page.extra.link_to }}>
+            <div class="card-image-placeholder">
+                <canvas id="pixelCanvas-{{ loop.index0 }}" width="160" height="160" class="pixel-art-canvas"></canvas>
+            </div>
+        </a>
+        {% else %}
+        <a href={{ page.permalink }}>
+            <div class="card-image-placeholder">
+                <canvas id="pixelCanvas-{{ loop.index0 }}" width="160" height="160" class="pixel-art-canvas"></canvas>
+            </div>
+        </a>
+        {% endif %}
         {% endif %}
 
-        <div class="card-info">
-            <h1 class="card-title">
-                {% if page.extra.link_to %}
-                <a href={{ page.extra.link_to }}>{{page.title}}</a>
-                {% else %}
-                <a href={{ page.permalink }}>{{page.title}}</a>
-                {% endif %}
-            </h1>
+            <div class="card-info">
+                <h1 class="card-title">
+                    {% if page.extra.link_to %}
+                    <a href={{ page.extra.link_to }}>{{page.title}}</a>
+                    {% else %}
+                    <a href={{ page.permalink }}>{{page.title}}</a>
+                    {% endif %}
+                </h1>
 
-            <div class="meta">
-                {%- if page.date %}
-                <time>{{ page.date | date(format="%Y-%m-%d") }}</time>
-                {% endif -%}
-                {% if page.draft %}
-                <span class="draft-label">DRAFT</span>
-                {% endif %}
-            </div>
+                <div class="meta">
+                    {%- if page.date %}
+                    <time>{{ page.date | date(format="%Y-%m-%d") }}</time>
+                    {% endif -%}
+                    {% if page.draft %}
+                    <span class="draft-label">DRAFT</span>
+                    {% endif %}
+                </div>
 
-            <div class="card-description">
-                {% if page.description %}
-                {{ page.description }}
-                {% endif %}
+                <div class="card-description">
+                    {% if page.description %}
+                    {{ page.description }}
+                    {% endif %}
+                </div>
             </div>
-        </div>
     </div>
 
     {% endfor -%}
 </div>
+
+<script src="{{ get_url(path='js/generatepostheader.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all pixel art canvases and generate headers for them
+        const canvases = document.querySelectorAll('.pixel-art-canvas');
+        canvases.forEach(canvas => {
+            const card = canvas.closest('.card');
+            const titleElement = card.querySelector('.card-title a');
+            if (titleElement) {
+                const title = titleElement.textContent.trim();
+                generateAndRenderForCard(title, canvas.id);
+            }
+        });
+    });
+
+    async function generateAndRenderForCard(title, canvasId) {
+        const hash = await getSHA256Hash(title);
+        const seed = hashToSeed(hash);
+        const rng = mulberry32(seed);
+        const pixelData = generateGradientPixelArt(rng, 16, 16, palette);
+        renderPixelArt(pixelData, canvasId, 10);
+    }
+</script>
 {% endmacro cards_posts %}

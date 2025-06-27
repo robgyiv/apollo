@@ -61,13 +61,23 @@ function generateGradientPixelArt(rng, width = 16, height = 16, palette) {
     pixels.push(palette[Math.floor(rng() * palette.length)]);
   }
 
-  pixels.sort((a, b) => getBrightness(a) - getBrightness(b));
+  // Instead of sorting by brightness, shuffle with more randomness
+  // Fisher-Yates shuffle with deterministic RNG
+  for (let i = pixels.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
+  }
 
-  const randomness = 0.15;
-  for (let i = 0; i < pixels.length - 1; i++) {
-    if (rng() < randomness) {
-      const swapIdx = Math.min(pixels.length - 1, i + Math.floor(rng() * 5));
-      [pixels[i], pixels[swapIdx]] = [pixels[swapIdx], pixels[i]];
+  // Optional: create some loose grouping while maintaining randomness
+  const groupSize = 3;
+  for (let i = 0; i < pixels.length - groupSize; i += groupSize) {
+    if (rng() < 0.3) { // 30% chance to create a small cluster
+      const color = pixels[i];
+      for (let j = 1; j < groupSize && i + j < pixels.length; j++) {
+        if (rng() < 0.7) { // 70% chance each pixel in group uses same color
+          pixels[i + j] = color;
+        }
+      }
     }
   }
 
