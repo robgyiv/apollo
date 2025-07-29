@@ -240,30 +240,30 @@
         {% endif %}
         {% endif %}
 
-            <div class="card-info">
-                <h1 class="card-title">
-                    {% if page.extra.link_to %}
-                    <a href={{ page.extra.link_to }}>{{page.title}}</a>
-                    {% else %}
-                    <a href={{ page.permalink }}>{{page.title}}</a>
-                    {% endif %}
-                </h1>
+        <div class="card-info">
+            <h1 class="card-title">
+                {% if page.extra.link_to %}
+                <a href={{ page.extra.link_to }}>{{page.title}}</a>
+                {% else %}
+                <a href={{ page.permalink }}>{{page.title}}</a>
+                {% endif %}
+            </h1>
 
-                <div class="meta">
-                    {%- if page.date %}
-                    <time>{{ page.date | date(format="%Y-%m-%d") }}</time>
-                    {% endif -%}
-                    {% if page.draft %}
-                    <span class="draft-label">DRAFT</span>
-                    {% endif %}
-                </div>
-
-                <div class="card-description">
-                    {% if page.description %}
-                    {{ page.description }}
-                    {% endif %}
-                </div>
+            <div class="meta">
+                {%- if page.date %}
+                <time>{{ page.date | date(format="%Y-%m-%d") }}</time>
+                {% endif -%}
+                {% if page.draft %}
+                <span class="draft-label">DRAFT</span>
+                {% endif %}
             </div>
+
+            <div class="card-description">
+                {% if page.description %}
+                {{ page.description }}
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     {% endfor -%}
