@@ -288,8 +288,8 @@
         const hash = await getSHA256Hash(title);
         const seed = hashToSeed(hash);
         const rng = mulberry32(seed);
-        const pixelData = generateGradientPixelArt(rng, 16, 16, palette);
-        renderPixelArt(pixelData, canvasId, 10);
+        const pixelData = generateGradientPixelArt(rng, 64, 128, palette);
+        renderPixelArt(pixelData, canvasId, 8);
     }
 </script>
 {% endmacro cards_posts %}
